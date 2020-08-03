@@ -17,7 +17,7 @@ Introduction
     :target: https://github.com/psf/black
     :alt: Code Style: Black
 
-Vector based dynamic progress bar widget for CircuitPython displays
+Vector based dynamic progress bar widget for CircuitPython displays. Intended to be a drop-in replacement for https://github.com/adafruit/Adafruit_CircuitPython_ProgressBar usable on devices with support for vectorio.
 
 
 Dependencies
@@ -35,35 +35,43 @@ Installing from PyPI
 .. note:: This library is not available on PyPI yet. Install documentation is included
    as a standard element. Stay tuned for PyPI availability!
 
-.. todo:: Remove the above note if PyPI version is/will be available at time of release.
-   If the library is not planned for PyPI, remove the entire 'Installing from PyPI' section.
-
-On supported GNU/Linux systems like the Raspberry Pi, you can install the driver locally `from
-PyPI <https://pypi.org/project/adafruit-circuitpython-vectorprogressbar/>`_. To install for current user:
-
-.. code-block:: shell
-
-    pip3 install adafruit-circuitpython-vectorprogressbar
-
-To install system-wide (this may be required in some cases):
-
-.. code-block:: shell
-
-    sudo pip3 install adafruit-circuitpython-vectorprogressbar
-
-To install in a virtual environment in your current project:
-
-.. code-block:: shell
-
-    mkdir project-name && cd project-name
-    python3 -m venv .env
-    source .env/bin/activate
-    pip3 install adafruit-circuitpython-vectorprogressbar
-
 Usage Example
 =============
 
-.. todo:: Add a quick, simple example. It and other examples should live in the examples folder and be included in docs/examples.rst.
+.. code:: python
+
+    import time
+    import board
+    import displayio
+    from adafruit_vector_progressbar import ProgressBar
+
+    # Make the display context
+    splash = displayio.Group(max_size=10)
+    board.DISPLAY.show(splash)
+
+    # set progress bar width and height relative to board's display
+    width = board.DISPLAY.width-40
+    height = 30
+
+    x = board.DISPLAY.width // 2 - width // 2
+    y = board.DISPLAY.height // 3
+
+    # Create a new progress_bar object at (x, y)
+    progress_bar = ProgressBar(x, y, width, height, 1.0)
+
+    # Append progress_bar to the splash group
+    splash.append(progress_bar)
+
+    current_progress = 0.0
+    while True:
+        # range end is exclusive so we need to use 1 bigger than max number that we want
+        for current_progress in range(0, 101, 1):
+            print("Progress: {}%".format(current_progress))
+            progress_bar.progress = current_progress / 100  # convert to decimal
+            time.sleep(0.01)
+        time.sleep(0.3)
+        progress_bar.progress = 0.0
+        time.sleep(0.3)
 
 Contributing
 ============
